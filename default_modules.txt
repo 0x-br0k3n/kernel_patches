@@ -117,7 +117,6 @@ leds-qti-tri-led.ko
 llcc_perfmon.ko
 llcc-qcom.ko
 lt9611uxc.ko
-mac80211.ko
 max31760_fan.ko
 mdt_loader.ko
 mem_buf_dev.ko
