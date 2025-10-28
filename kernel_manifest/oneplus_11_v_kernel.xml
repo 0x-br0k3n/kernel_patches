@@ -6,6 +6,7 @@
   <project remote="origin" name="android_kernel_common_oneplus_sm8550" path="kernel_platform/common" revision="oneplus/sm8550_v_15.0.0_oneplus11">
     <linkfile dest=".source_date_epoch_dir" src="."/>
   </project>
+  <project remote="origin" name="android_kernel_modules_and_devicetree_oneplus_sm8550" path="./" revision="oneplus/sm8550_v_15.0.0_oneplus11"/>
   <project remote="clo-la" name="kernel_platform/prebuilts/jdk/jdk11" path="kernel_platform/prebuilts/jdk/jdk11" revision="30b304c89fb78d9d77ed2c016df44acea2232363" upstream="refs/heads/ks-kernel.lnx.2.0.r1-rel"/>
   <project remote="clo-la" name="kernel_platform/system/tools/mkbootimg" path="kernel_platform/tools/mkbootimg" revision="db9f3716c72d7612fc507b89d1fc3876f061350e" upstream="refs/heads/ks-kernel.lnx.2.0.r1-rel"/>
   <project remote="clo-la" name="kernel_platform/toolchain/prebuilts/ndk/r23" path="kernel_platform/prebuilts/ndk-r23" revision="93532f3052c14fbb337ff57d5732128dc7481ee6" upstream="refs/heads/ks-kernel.lnx.2.0.r1-rel"/>
