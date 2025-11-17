@@ -1108,7 +1108,7 @@ index 0000000000000000000000000000000000000000..fa49e17c47ca9ad00e8fbbc7b784ce6b
 +		dctcp_ece_ack_update(sk, event, &bbr->prior_rcv_nxt, &state);
 +		bbr->ce_state = state;
 +		if (tp->fast_ack_mode == 2 && event == CA_EVENT_ECN_IS_CE)
-+			tcp_enter_quickack_mode(sk, TCP_MAX_QUICKACKS);
++			inet_csk(sk)->icsk_ack.quick = TCP_MAX_QUICKACKS;
 +	}
 +}
 +
@@ -3045,7 +3045,7 @@ index 141e85e6422b1f567b89d554024ee92aa5fa2d2f..425014b2c9207b5aed5eb7d98ba43b3b
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
 @@ -349,7 +349,7 @@ static void __tcp_ecn_check_ce(struct sock *sk, const struct sk_buff *skb)
- 			tcp_enter_quickack_mode(sk, 2);
+ 			inet_csk(sk)->icsk_ack.quick = 2;
  		break;
  	case INET_ECN_CE:
 -		if (tcp_ca_needs_ecn(sk))
