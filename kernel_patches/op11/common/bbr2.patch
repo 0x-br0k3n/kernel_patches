@@ -3222,7 +3222,7 @@ index 6d72f3ea48c4ef0d193ec804653e4d4321f3f20a..da11fde1610fd735b3ca02a7cbcd0ede
 -
 -	min_tso = ca_ops->min_tso_segs ?
 -			ca_ops->min_tso_segs(sk) :
--			sock_net(sk)->ipv4.sysctl_tcp_min_tso_segs;
+-			READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_tso_segs);
 +	u32 tso_segs;
  
 -	tso_segs = tcp_tso_autosize(sk, mss_now, min_tso);
@@ -3281,29 +3281,28 @@ index 0de6935659635f5013a26c4f28cdd06436cfa8d2..796fa6e5310ce9f6aae6168ccffbec85
  }
  
  /* When an skb is sacked or acked, we fill in the rate sample with the (prior)
-@@ -86,16 +107,20 @@ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
- 
+@@ -90,16 +90,20 @@ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
  	if (!rs->prior_delivered ||
- 	    after(scb->tx.delivered, rs->prior_delivered)) {
-+		rs->prior_lost	     = scb->tx.lost;
+ 	    tcp_skb_sent_after(tx_tstamp, tp->first_tx_mstamp,
+ 			       scb->end_seq, rs->last_end_seq)) {
++		rs->prior_lost          = scb->tx.lost;
 +		rs->prior_delivered_ce  = scb->tx.delivered_ce;
  		rs->prior_delivered  = scb->tx.delivered;
  		rs->prior_mstamp     = scb->tx.delivered_mstamp;
  		rs->is_app_limited   = scb->tx.is_app_limited;
  		rs->is_retrans	     = scb->sacked & TCPCB_RETRANS;
+ 		rs->last_end_seq     = scb->end_seq;
 +		rs->tx_in_flight     = scb->tx.in_flight;
  
  		/* Record send time of most recently ACKed packet: */
- 		tp->first_tx_mstamp  = tcp_skb_timestamp_us(skb);
+ 		tp->first_tx_mstamp  = tx_tstamp;
  		/* Find the duration of the "send phase" of this window: */
 -		rs->interval_us = tcp_stamp_us_delta(tp->first_tx_mstamp,
--						     scb->tx.first_tx_mstamp);
-+		rs->interval_us      = tcp_stamp32_us_delta(
-+						tp->first_tx_mstamp,
-+						scb->tx.first_tx_mstamp);
++		rs->interval_us = tcp_stamp32_us_delta(
++						     tp->first_tx_mstamp,
+ 						     scb->tx.first_tx_mstamp);
  
  	}
- 	/* Mark off the skb delivered once it's sacked to avoid being
 @@ -137,6 +162,11 @@ void tcp_rate_gen(struct sock *sk, u32 delivered, u32 lost,
  		return;
  	}
